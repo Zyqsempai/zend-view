@@ -69,6 +69,13 @@ class Menu extends AbstractHelper
     protected $liActiveClass = 'active';
 
     /**
+     * Array with variables to populate in the view
+     *
+     * @var array
+     */
+    protected $partialParams = array();
+
+    /**
      * View helper entry point:
      * Retrieves helper and optionally sets container to operate on
      *
@@ -162,7 +169,7 @@ class Menu extends AbstractHelper
             }
 
             // render li tag and page
-            $liClasses = [];
+            $liClasses = array();
             // Is page active?
             if ($subPage->isActive(true)) {
                 $liClasses[] = $liActiveClass;
@@ -198,7 +205,7 @@ class Menu extends AbstractHelper
      * @param  array             $options   [optional] options for controlling rendering
      * @return string
      */
-    public function renderMenu($container = null, array $options = [])
+    public function renderMenu($container = null, array $options = array())
     {
         $this->parseContainer($container);
         if (null === $container) {
@@ -342,7 +349,7 @@ class Menu extends AbstractHelper
             }
 
             // render li tag and page
-            $liClasses = [];
+            $liClasses = array();
             // Is page active?
             if ($isActive) {
                 $liClasses[] = $liActiveClass;
@@ -410,10 +417,7 @@ class Menu extends AbstractHelper
                 'Unable to render menu: No partial view script provided'
             );
         }
-
-        $model = [
-            'container' => $container
-        ];
+        $model = array_merge((array)$this->partialParams , array('container' => $container));
 
         /** @var \Zend\View\Helper\Partial $partialHelper */
         $partialHelper = $this->view->plugin('partial');
@@ -474,7 +478,7 @@ class Menu extends AbstractHelper
         $indent = null,
         $liActiveClass = null
     ) {
-        return $this->renderMenu($container, [
+        return $this->renderMenu($container, array(
             'indent'             => $indent,
             'ulClass'            => $ulClass,
             'minDepth'           => null,
@@ -484,7 +488,7 @@ class Menu extends AbstractHelper
             'escapeLabels'       => true,
             'addClassToListItem' => false,
             'liActiveClass'      => $liActiveClass
-        ]);
+        ));
     }
 
     /**
@@ -501,10 +505,10 @@ class Menu extends AbstractHelper
     public function htmlify(AbstractPage $page, $escapeLabel = true, $addClassToListItem = false)
     {
         // get attribs for element
-        $attribs = [
+        $attribs = array(
             'id'     => $page->getId(),
             'title'  => $this->translate($page->getTitle(), $page->getTextDomain()),
-        ];
+        );
 
         if ($addClassToListItem === false) {
             $attribs['class'] = $page->getClass();
@@ -540,7 +544,7 @@ class Menu extends AbstractHelper
      * @param  array $options  [optional] options to normalize
      * @return array
      */
-    protected function normalizeOptions(array $options = [])
+    protected function normalizeOptions(array $options = array())
     {
         if (isset($options['indent'])) {
             $options['indent'] = $this->getWhitespace($options['indent']);
@@ -765,5 +769,25 @@ class Menu extends AbstractHelper
     public function getLiActiveClass()
     {
         return $this->liActiveClass;
+    }
+
+    /**
+     * Returns partial params variable to populate in the view
+     * @return array
+     */
+    public function getPartialParams()
+    {
+        return $this->partialParams;
+    }
+
+    /**
+     * Sets partial params variable to populate in the view
+     * @param array $partialParams
+     * @@return self
+     */
+    public function setPartialParams($partialParams = array())
+    {
+        $this->partialParams = $partialParams;
+        return $this;
     }
 }
