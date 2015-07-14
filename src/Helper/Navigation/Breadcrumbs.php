@@ -48,6 +48,13 @@ class Breadcrumbs extends AbstractHelper
     protected $separator = ' &gt; ';
 
     /**
+     * Array with variables to populate in the view
+     *
+     * @var array
+     */
+    protected $partialParams = [];
+
+    /**
      * Helper entry point
      *
      * @param  string|AbstractContainer $container container to operate on
@@ -171,10 +178,8 @@ class Breadcrumbs extends AbstractHelper
         }
 
         // put breadcrumb pages in model
-        $model = [
-            'pages' => [],
-            'separator' => $this->getSeparator()
-        ];
+        $model = array_merge((array)$this->partialParams , array('pages' => array()), array('separator' => $this->getSeparator()));
+
         $active = $this->findActive($container);
         if ($active) {
             $active = $active['page'];
@@ -288,5 +293,25 @@ class Breadcrumbs extends AbstractHelper
     public function getSeparator()
     {
         return $this->separator;
+    }
+
+    /**
+     * Returns partial params variable to populate in the view
+     * @return array
+     */
+    public function getPartialParams()
+    {
+        return $this->partialParams;
+    }
+
+    /**
+     * Sets partial params variable to populate in the view
+     * @param array $partialParams
+     * @@return self
+     */
+    public function setPartialParams($partialParams = array())
+    {
+        $this->partialParams = $partialParams;
+        return $this;
     }
 }
